@@ -55,7 +55,12 @@ public class HuffProcessor {
 		out.close();
 	}
 	
-	public int[] readForCounts(BitInputStream in) 
+	/**
+	 * Finds the frequency of each character in a given bitstream
+	 * @param in Buffered bit stream of the file to be compressed
+	 * @return Integer array of frequencies of every character
+	 */
+	private int[] readForCounts(BitInputStream in) 
 	{
 		int[] arr = new int[ALPH_SIZE + 1];
 		while(true) 
@@ -71,7 +76,12 @@ public class HuffProcessor {
 		return arr;
 	}
 	
-	public HuffNode makeTreeFromCounts(int[] arr) 
+	/**
+	 * Creates a Huffman tree given frequencies of characters
+	 * @param arr The frequencies of the characters for the Huffman tree
+	 * @return A Huffman tree based on arr
+	 */
+	private HuffNode makeTreeFromCounts(int[] arr) 
 	{
 		PriorityQueue<HuffNode> pq = new PriorityQueue<HuffNode>();
 		
@@ -94,14 +104,25 @@ public class HuffProcessor {
 		return root;
 	}
 	
-	public String[] makeCodingsFromTree(HuffNode root) 
+	/**
+	 * Creates the codings from a given Huffman tree
+	 * @param root the tree the codings are based off of
+	 * @return the 0 and 1 represenation of every root in the Huffman tree
+	 */
+	private String[] makeCodingsFromTree(HuffNode root) 
 	{
 		String[] encodings = new String[ALPH_SIZE + 1];
 		codingHelper(root,"",encodings);
 		return encodings;
 	}
 	
-	public void codingHelper(HuffNode root, String curr, String[] encodings) 
+	/**
+	 * Helper method for makeCodingsFromTree
+	 * @param root the Huffman tree being traversed
+	 * @param curr the current encoding
+	 * @param encodings the array of encodings to be updated
+	 */
+	private void codingHelper(HuffNode root, String curr, String[] encodings) 
 	{
 		if(root == null) 
 		{
@@ -118,7 +139,12 @@ public class HuffProcessor {
 		
 	}
 	
-	public void writeHeader(HuffNode root, BitOutputStream out) 
+	/**
+	 * Writes out the Huffman tree
+	 * @param root the Huffman tree to be written out
+	 * @param out the output stream to where the tree is written to
+	 */
+	private void writeHeader(HuffNode root, BitOutputStream out) 
 	{
 		if(root == null) 
 		{
@@ -137,7 +163,13 @@ public class HuffProcessor {
 		}
 	}
 	
-	public void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) 
+	/**
+	 * Writes out the compressed version of the input stream
+	 * @param codings The Huffman codings that the characters are changed to
+	 * @param in The input stream that contains the thing to be compressed
+	 * @param out the output stream to which the compressed version is written to
+	 */
+	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) 
 	{
 		while(true) 
 		{
@@ -152,6 +184,7 @@ public class HuffProcessor {
 		String code = codings[PSEUDO_EOF];
 		out.writeBits(code.length(), Integer.parseInt(code,2));
 	}
+	
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
 	 * original.
@@ -173,7 +206,12 @@ public class HuffProcessor {
 		out.close();
 	}
 	
-	public HuffNode readTreeHeader(BitInputStream in) 
+	/**
+	 * Reads in the tree for a given input stream
+	 * @param in the input stream of an encoded Huffman tree
+	 * @return the Huffnode associated with the encodings in the input stream
+	 */
+	private HuffNode readTreeHeader(BitInputStream in) 
 	{
 		int bit = in.readBits(1);
 		if(bit == -1) 
@@ -193,7 +231,13 @@ public class HuffProcessor {
 		}
 	}
 	
-	public void readCompressedBits(HuffNode root,BitInputStream in,BitOutputStream out) 
+	/**
+	 * Reads the compressed bits in the input stream
+	 * @param root The Huffman tree the encodings of the characters are based on
+	 * @param in the input stream that is to be read/decompressed
+	 * @param out the output stream to which the results are written to
+	 */
+	private void readCompressedBits(HuffNode root,BitInputStream in,BitOutputStream out) 
 	{
 		HuffNode current = root;
 		while(true) 
